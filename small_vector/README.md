@@ -16,18 +16,32 @@
     - ```SmallVector(size_t size)```  --- создает small_vector из size объектов равных T()
     - ```SmallVector(size_t size, const T& obj)```  --- создает small_vector из size объектов равных obj
     - ```SmallVector(const SmallVector& other)```
+    - ```SmallVector(SmallVector&& other)```
 - Операторы
     - ```operator=(const SmallVector&)```
+    - ```operator=(SmallVector&&)```
     - ```operator[](size_t)```
 - Методы
     - ```size()```
     - ```reserve(size_t n)``` --- резервирует память под n объектов
     - ```resize(size_t n)``` --- изменяет размер, если получилось больше - заполняет T()
     - ```push_back(const T&)```
+    - ```push_back(T&&)```
+    - ```emplace_back(Args&&... args)``` --- конструирует элемент in-place
     - ```pop_back()```
 - Итераторы
     - ```Iterator begin()```
     - ```Iterator end()```
     - ```constIterator cbegin()```
     - ```constIterator cend()```
+
+## Exception safety
+
+Реализация должна обеспечивать строгую гарантию исключений (strong exception safety) для следующих операций:
+- ```push_back``` / ```emplace_back``` --- если при вставке элемента выбрасывается исключение (например, при копировании/перемещении элементов в новый буфер или при конструировании нового элемента), контейнер должен остаться в исходном состоянии
+- ```resize``` / ```reserve``` --- если при реаллокации или конструировании новых элементов выбрасывается исключение, контейнер не должен быть изменён
+
+Для остальных операций достаточно базовой гарантии (basic exception safety) --- отсутствие утечек ресурсов и корректное состояние объекта.
+
+При перемещении элементов между буферами следует использовать ```std::move_if_noexcept``` --- элементы перемещаются только если move-конструктор помечен как ```noexcept```, иначе используется копирование
 

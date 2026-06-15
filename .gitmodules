@@ -1,0 +1,3 @@
+[submodule "small_vector/Catch2"]
+	path = small_vector/Catch2
+	url = https://github.com/catchorg/Catch2.git
